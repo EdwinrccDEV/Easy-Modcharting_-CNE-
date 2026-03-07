@@ -5,11 +5,17 @@ import haxe.Timer;
 /*
 Modified Part by Edwin
 */
-var gpuModifierDefs = [
+varvar gpuModifierDefs = [
     { name: "drunk", value: 0.0, code: "x += cos(((songPosition*0.001) + (strumID*0.2) + (curPos*0.45)*0.013) * (10.0*0.2)) * 112.0*0.5 * drunk_value;" },
+    { name: "drunkP1", value: 0.0, code: "x += cos(((songPosition*0.001) + (strumID*0.2) + (curPos*0.45)*0.013) * (2.0*0.2)) * 112.0*0.5 * drunkP1_value;", strumLine: 1 },
+    { name: "drunkP2", value: 0.0, code: "x += cos(((songPosition*0.001) + (strumID*0.2) + (curPos*0.45)*0.013) * (2.0*0.2)) * 112.0*0.5 * drunkP2_value;", strumLine: 0 },
     { name: "tipsy", value: 0.0, code: "y += cos(songPosition*0.001 * (1.2) + (strumID)*(2.0) + 2.0*(0.2)) * 112.0*0.4 * tipsy_value;" },
     { name: "beat", value: 0.0, code: "float fAccelTime = 0.2; float fTotalTime = 0.5; float fBeat = curBeat + fAccelTime; if (fBeat >= 0.0) { float evenBeat = mod(floor(fBeat), 2.0); fBeat -= floor(fBeat); fBeat += 1.0; fBeat -= floor(fBeat); if (fBeat < fTotalTime) { float fAmount = 0.0; if (fBeat < fAccelTime) { fAmount = (fBeat / fAccelTime); fAmount *= fAmount; } else { fAmount = 1.0 + (fBeat - fAccelTime) * ((0.0 - 1.0) / (fTotalTime - fAccelTime)); fAmount = 1.0 - (1.0 - fAmount) * (1.0 - fAmount); } if (evenBeat != 0.0) fAmount *= -1.0; x += 20.0 * fAmount * sin((curPos * 0.01) + (PI * 0.5)) * beat_value; } } " },
+    { name: "beatYP1", value: 0.0, code: "float fAccelTime = 0.2; float fTotalTime = 0.5; float fBeat = curBeat + fAccelTime; if (fBeat >= 0.0) { float evenBeat = mod(floor(fBeat), 2.0); fBeat -= floor(fBeat); fBeat += 1.0; fBeat -= floor(fBeat); if (fBeat < fTotalTime) { float fAmount = 0.0; if (fBeat < fAccelTime) { fAmount = (fBeat / fAccelTime); fAmount *= fAmount; } else { fAmount = 1.0 + (fBeat - fAccelTime) * ((0.0 - 1.0) / (fTotalTime - fAccelTime)); fAmount = 1.0 - (1.0 - fAmount) * (1.0 - fAmount); } if (evenBeat != 0.0) fAmount *= -1.0; y += 20.0 * fAmount * sin((curPos * 0.01) + (PI * 0.5)) * beatYP1_value; } }", strumLine: 1 },
+    { name: "beatYP2", value: 0.0, code: "float fAccelTime = 0.2; float fTotalTime = 0.5; float fBeat = curBeat + fAccelTime; if (fBeat >= 0.0) { float evenBeat = mod(floor(fBeat), 2.0); fBeat -= floor(fBeat); fBeat += 1.0; fBeat -= floor(fBeat); if (fBeat < fTotalTime) { float fAmount = 0.0; if (fBeat < fAccelTime) { fAmount = (fBeat / fAccelTime); fAmount *= fAmount; } else { fAmount = 1.0 + (fBeat - fAccelTime) * ((0.0 - 1.0) / (fTotalTime - fAccelTime)); fAmount = 1.0 - (1.0 - fAmount) * (1.0 - fAmount); } if (evenBeat != 0.0) fAmount *= -1.0; y += 20.0 * fAmount * sin((curPos * 0.01) + (PI * 0.5)) * beatYP2_value; } }", strumLine: 0 },
     { name: "x", value: 0.0, code: "x += x_value;" },
+    { name: "xP1", value: 0.0, code: "x += xP1_value;", strumLine: 1 },
+    { name: "xP2", value: 0.0, code: "x += xP2_value;", strumLine: 0 },
     { name: "y", value: 0.0, code: "y -= y_value;" },
     { name: "z", value: 0.0, code: "z += z_value;" },
     { name: "angleX", value: 0.0, code: "angleX += angleX_value;" },
@@ -20,14 +26,21 @@ var gpuModifierDefs = [
     { name: "flip", value: 0.0, code: "float newPos = 4.0 + (strumID - 0.0) * ((-4.0 - 4.0) / (4.0 - 0.0)); x += (112.0 * newPos * flip_value) - (112.0 * flip_value);" },
     { name: "invert", value: 0.0, code: "if (mod(strumID, 2.0) == 0.0) { x += (112.0 * invert_value); } else { x -= (112.0 * invert_value); }" },
     { name: "reverse", value: 0.0, code: "curPos *= (1.0-(reverse_value*2.0)); y -= 520.0 * reverse_value;" },
+    { name: "reverseP1", value: 0.0, code: "curPos *= (1.0-(reverseP1_value*2.0)); y -= 520.0 * reverseP1_value;", strumLine: 1 },
+    { name: "reverseP2", value: 0.0, code: "curPos *= (1.0-(reverseP2_value*2.0)); y -= 520.0 * reverseP2_value;", strumLine: 0 },
     { name: "boost", value: 0.0, code: "float fYOffset = -curPos; float fEffectHeight = 150.0; float fNewYOffset = fYOffset * 1.5 / ((fYOffset+fEffectHeight/1.2)/fEffectHeight); float fBrakeYAdjust = boost_value * (fNewYOffset - fYOffset); fBrakeYAdjust = clamp(fBrakeYAdjust, -400.0, 400.0); curPos += fBrakeYAdjust;" },
     { name: "brake", value: 0.0, code: "float fYOffset = -curPos; float fEffectHeight = 1280.0; float fScale = (fYOffset - 0.0) * ((1.0 - 0.0) / (fEffectHeight - 0.0)); float fNewYOffset = fYOffset * fScale; float fBrakeYAdjust = brake_value * (fNewYOffset - fYOffset); fBrakeYAdjust = clamp(fBrakeYAdjust, -400.0, 400.0); curPos += fBrakeYAdjust;" },
     { name: "speed", value: 1.0, code: "curPos *= speed_value;", defaultValue: 1.0 },
     { name: "confusion", value: 0.0, code: "angleY += confusion_value;" },
     { name: "alpha", value: 0.0, code: "a *= (0.0 - alpha_value) + 1.0;" },
+    { name: "opponentAlpha", value: 0.0, code: "a *= (0.0 - opponentAlpha_value) + 1.0;", strumLine: 0 },
     { name: "incomingAngleX", value: 0.0, code: "incomingAngleY -= incomingAngleX_value;" },
     { name: "incomingAngleY", value: 0.0, code: "incomingAngleZ += incomingAngleY_value;" },
     { name: "incomingAngleZ", value: 0.0, code: "incomingAngleZ += incomingAngleZ_value;" },
+    { name: "InvertIncomingAngle", value: 0.0, code: "if (mod(strumID, 2.0) == 0.0) { incomingAngleZ -= InvertIncomingAngle_value + (curPos * 0.015); } else { incomingAngleZ += InvertIncomingAngle_value + (curPos * 0.015); }" },
+    { name: "IncomingAngleSmooth", value: 0.0, code: "incomingAngleZ -= IncomingAngleSmooth_value + (curPos * 0.015);" },
+    { name: "IncomingAngleCurve", value: 0.0, code: "incomingAngleZ -= IncomingAngleCurve_value * (curPos * 0.015);" },
+    { name: "MoveYWaveShit", value: 0.0, code: "y += 260.0*sin(((songPosition+curPos)*0.0008)+(strumID / 4.0)) * MoveYWaveShit_value;" },
     { name: "flash", value: 0.0, code: "color.rgb = mix(color.rgb, vec3(1.0, 1.0, 1.0), flash_value) * color.a;", fragShader: true }
 ];
 
