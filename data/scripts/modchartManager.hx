@@ -68,7 +68,8 @@ public function setupFromJson(data:Dynamic) {
             if (mod != null) {
                 var defaultVal:Float = mod.defaultValue != null ? mod.defaultValue : 0.0;
                 var fragType:Int = mod.fragShader != null && mod.fragShader ? MOD_TYPE_FRAG : MOD_TYPE_NOTE;
-                createModifier(name, defaultVal, mod.code, -1, -1, defaultVal, true, fragType);
+                var strumLine:Int = mod.strumLine != null ? mod.strumLine : -1;
+				createModifier(name, defaultVal, mod.code, strumLine, -1, defaultVal, true, fragType);
             } else {
                 trace('WARNING: unknown GPU modifier "' + name + '"');
             }
