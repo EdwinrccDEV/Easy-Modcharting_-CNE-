@@ -82,6 +82,7 @@ This is useful for effects that need to start at a specific value and then anima
 
 ### Repeater (GPU ONLY)
 Repeats an event automatically every X beats or steps. Instead of writing the same event dozens of times, you write it once and tell it how many times to repeat.
+> **Note:** The repeater is GPU only because the CPU framework handles timing differently — `ease` and `callback` conflict when scheduled at the same beat, making reliable repeating impossible without the GPU's `set` and `ease` functions which don't have this limitation.
 
 ```json
 { "repeater": { "modifier": "flash", "value": 1, "endValue": 0, "duration": 0.5, "every": 1, "each": "beat", "during": 8, "startBeat": 4 } }
