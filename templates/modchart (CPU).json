@@ -1,0 +1,15 @@
+{
+  "modchart": [
+    { "modifier": "drunk", "value": 1, "startBeat": 4, "endBeat": 8, "ease": "elastic", "easeDir": "Out" },
+    { "modifier": "zigZag", "value": 1, "startBeat": 8, "endBeat": 12, "ease": "back", "easeDir": "Out" },
+    { "modifier": "tornado", "value": 1, "startBeat": 12 },
+    { "modifier": "centerRotateZ", "value": 360, "endValue": 0, "startBeat": 16, "endBeat": 20, "ease": "bounce", "easeDir": "Out" },
+    { "modifier": "receptorScroll", "value": 1, "startBeat": 20, "endBeat": 24, "ease": "cube", "easeDir": "Out" },
+    { "modifier": "bumpy", "value": 1, "startBeat": 24, "endBeat": 28, "ease": "elastic", "easeDir": "Out" },
+    { "modifier": "drunk", "value": 0, "startBeat": 32, "endBeat": 36, "ease": "expo", "easeDir": "In" },
+    { "modifier": "zigZag", "value": 0, "startBeat": 32, "endBeat": 36, "ease": "expo", "easeDir": "In" },
+    { "modifier": "tornado", "value": 0, "startBeat": 32, "endBeat": 36, "ease": "expo", "easeDir": "In" },
+    { "modifier": "receptorScroll", "value": 0, "startBeat": 32, "endBeat": 36, "ease": "cube", "easeDir": "In" },
+    { "modifier": "bumpy", "value": 0, "startBeat": 32, "endBeat": 36, "ease": "expo", "easeDir": "In" }
+  ]
+}
