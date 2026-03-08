@@ -61,7 +61,7 @@ public function setupFromJson(data:Dynamic) {
     // register all unique modifiers first
     var registered:Array<String> = [];
     for (event in events) {
-        var name:String = event.modifier;
+        var name:String = event.repeater != null ? event.repeater.modifier : event.modifier;
         if (registered.indexOf(name) == -1) {
             registered.push(name);
             var mod = getGpuModDef(name);
@@ -69,7 +69,7 @@ public function setupFromJson(data:Dynamic) {
                 var defaultVal:Float = mod.defaultValue != null ? mod.defaultValue : 0.0;
                 var fragType:Int = mod.fragShader != null && mod.fragShader ? MOD_TYPE_FRAG : MOD_TYPE_NOTE;
                 var strumLine:Int = mod.strumLine != null ? mod.strumLine : -1;
-				createModifier(name, defaultVal, mod.code, strumLine, -1, defaultVal, true, fragType);
+                createModifier(name, defaultVal, mod.code, strumLine, -1, defaultVal, true, fragType);
             } else {
                 trace('WARNING: unknown GPU modifier "' + name + '"');
             }
@@ -81,6 +81,30 @@ public function setupFromJson(data:Dynamic) {
 
     // setup events
     for (event in events) {
+
+        // handle repeater
+        if (event.repeater != null) {
+            var r = event.repeater;
+            var step:Float = r.each == "step" ? r.every / 4 : r.every;
+            var startBeat:Float = r.startStep != null ? r.startStep / 4 : (r.startBeat != null ? r.startBeat : 0.0);
+            var easeDir:String = r.easeDir != null ? r.easeDir.charAt(0).toUpperCase() + r.easeDir.substr(1) : "";
+            var easeName:String = r.ease != null ? r.ease + easeDir : "linear";
+
+            var i = 0;
+            while (i < r.during) {
+                var b:Float = startBeat + (i * step);
+                set(b, r.value + ", " + r.modifier);
+				if (r.endValue != null) {
+					var dur:Float = r.durationStep != null ? r.durationStep / 4 : r.duration;
+					if (dur != null) {
+						ease(b, dur, easeName, r.endValue + ", " + r.modifier);
+					}
+				}
+                i++;
+            }
+            continue;
+        }
+
         var evtStartBeat:Float = event.startStep != null ? event.startStep / 4 : event.startBeat;
         var evtEndBeat = event.endStep != null ? event.endStep / 4 : event.endBeat;
 
@@ -88,7 +112,6 @@ public function setupFromJson(data:Dynamic) {
         var easeName:String = event.ease != null ? event.ease + easeDir : "linear";
 
         if (event.endValue != null) {
-            // snap to value then tween to endValue
             set(evtStartBeat, event.value + ", " + event.modifier);
             if (evtEndBeat != null) {
                 var duration:Float = evtEndBeat - evtStartBeat;
